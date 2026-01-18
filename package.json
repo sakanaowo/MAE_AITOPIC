@@ -1,0 +1,12 @@
+{
+  "name": "mae_aitopic",
+  "version": "1.0.0",
+  "description": "Masked Autoencoders Are Scalable Vision Learners",
+  "license": "ISC",
+  "author": "sakanaowo",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
