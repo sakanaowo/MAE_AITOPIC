@@ -21,7 +21,7 @@ class MAELarge(nn.Module):
         num_patches = self.patch_embed.num_patches # (img_size // patch_size) ** 2 -> 196 for 224x224 with 16x16 patches
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.pos_embed = nn.Parameter(
-            torch.zeros(1,num_patches + 1, decoder_embed_dim),
+            torch.zeros(1, num_patches + 1, embed_dim),
             requires_grad=False
         )
         
