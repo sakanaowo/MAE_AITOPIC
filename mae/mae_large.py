@@ -80,13 +80,14 @@ class MAELarge(nn.Module):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
             
-    def patchify(self,imgs):
-        p=self.patch_size
-        B,C,H,W=imgs.shape
-        h=w=H//p
-        x=imgs.reshape(B,C,h,p,w,p)
-        x = x.permute(0,5,1,3,2,4).reshape(x.shape[0],3, h*p, p*p*w)
-        return x 
+    def patchify(self, imgs):
+        p = self.patch_size
+        B, C, H, W = imgs.shape
+        h = w = H // p
+        x = imgs.reshape(B, C, h, p, w, p)
+        x = x.permute(0, 2, 4, 3, 5, 1)
+        x = x.reshape(B, h * w, p * p * C)
+        return x
     
     def unpatchify(self, x):
         p = self.patch_size
