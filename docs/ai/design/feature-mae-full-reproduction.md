@@ -171,14 +171,14 @@ class MaskedAutoencoder(nn.Module):
 
 **Why did we choose this approach?**
 
-| Decision                             | Choice         | Rationale                                                                           |
-| ------------------------------------ | -------------- | ----------------------------------------------------------------------------------- |
-| Separate `encoder.py` / `decoder.py` | Yes            | Paper emphasizes asymmetric design; lets users study each independently             |
-| Keep `mae.py` as unified glue        | Yes            | Users need a single entry point for end-to-end forward                              |
-| New `models/` folder                 | Yes            | Clean separation: `mae/` = reusable modules, `models/` = specific configs           |
-| Factory functions (snake_case)       | Yes            | Matches official MAE convention (`mae_vit_base_patch16_dec512d8b`)                  |
-| No `timm` dependency                 | Keep           | Educational purpose — understand every layer                                        |
-| `norm_layer` parameter               | Add to `Block` | Official uses `partial(nn.LayerNorm, eps=1e-6)`, our Block hardcodes `nn.LayerNorm` |
+| Decision                             | Choice  | Rationale                                                                            |
+| ------------------------------------ | ------- | ------------------------------------------------------------------------------------ |
+| Separate `encoder.py` / `decoder.py` | Yes     | Paper emphasizes asymmetric design; lets users study each independently              |
+| Keep `mae.py` as unified glue        | Yes     | Users need a single entry point for end-to-end forward                               |
+| New `models/` folder                 | Yes     | Clean separation: `mae/` = reusable modules, `models/` = specific configs            |
+| Factory functions (snake_case)       | Yes     | Matches official MAE convention (`mae_vit_base_patch16_dec512d8b`)                   |
+| No `timm` dependency                 | Keep    | Educational purpose — understand every layer                                         |
+| `norm_layer` parameter               | ✅ Done | Block nhận `norm_layer` param, default `nn.LayerNorm(dim, eps=1e-6)` — khớp official |
 
 ## Non-Functional Requirements
 
