@@ -34,11 +34,13 @@ class Mlp(nn.Module):
 class Block(nn.Module):
     """Transformer encoder block."""
     
-    def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=True, drop=0., attn_drop=0.):
+    def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=True, drop=0., attn_drop=0.,
+                 norm_layer=None):
         super().__init__()
-        self.norm1 = nn.LayerNorm(dim)
+        norm_layer = norm_layer or (lambda d: nn.LayerNorm(d, eps=1e-6))
+        self.norm1 = norm_layer(dim)
         self.attn = Attention(dim, num_heads, qkv_bias, attn_drop, drop)
-        self.norm2 = nn.LayerNorm(dim)
+        self.norm2 = norm_layer(dim)
         self.mlp = Mlp(dim, int(dim * mlp_ratio), drop=drop)
     
     def forward(self, x):
