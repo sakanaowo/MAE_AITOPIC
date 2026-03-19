@@ -1,17 +1,21 @@
 """
-Transformer Block
-================
-- Pre-norm architecture (LayerNorm trước Attention và MLP)
-- Residual connections
-- MLP với GELU activation
+Transformer Block cho MAE ViT-Large
+=====================================
+Pre-norm architecture:
+- LayerNorm → Attention → Residual
+- LayerNorm → MLP → Residual
+
+Key naming khớp checkpoint:
+- norm1, attn (qkv, proj)
+- norm2, mlp (fc1, fc2)
 """
 
-import torch
 import torch.nn as nn
 from .attention import Attention
 
+
 class Mlp(nn.Module):
-    """MLP block với expansion ratio."""
+    """MLP block: Linear → GELU → Linear."""
     
     def __init__(self, in_features, hidden_features=None, out_features=None, drop=0.):
         super().__init__()
@@ -19,7 +23,7 @@ class Mlp(nn.Module):
         hidden_features = hidden_features or in_features * 4
         
         self.fc1 = nn.Linear(in_features, hidden_features)
-        self.act = nn.GELU()  # Smoother than ReLU
+        self.act = nn.GELU()
         self.fc2 = nn.Linear(hidden_features, out_features)
         self.drop = nn.Dropout(drop)
     
@@ -31,8 +35,20 @@ class Mlp(nn.Module):
         x = self.drop(x)
         return x
 
+
 class Block(nn.Module):
-    """Transformer encoder block."""
+    """
+    Transformer encoder block.
+    
+    Tên attribute khớp checkpoint:
+    - self.norm1 → blocks.{i}.norm1
+    - self.attn  → blocks.{i}.attn (qkv, proj)
+    - self.norm2 → blocks.{i}.norm2
+    - self.mlp   → blocks.{i}.mlp (fc1, fc2)
+    
+    Note: LayerNorm eps=1e-6 để khớp official implementation.
+    Official: partial(nn.LayerNorm, eps=1e-6)
+    """
     
     def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=True, drop=0., attn_drop=0.,
                  norm_layer=None):
@@ -48,10 +64,3 @@ class Block(nn.Module):
         x = x + self.attn(self.norm1(x))
         x = x + self.mlp(self.norm2(x))
         return x
-    
-if __name__ == "__main__":
-    block = Block(dim=768, num_heads=12)
-    x = torch.randn(2, 197, 768)  # (B, N, C)
-    out = block(x)
-    assert out.shape == (2, 197, 768), f"Expected shape (2, 197, 768), but got {out.shape}"
-    print("Transformer Block output shape:", out.shape)
